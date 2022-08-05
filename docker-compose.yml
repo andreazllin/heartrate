@@ -1,8 +1,8 @@
 version: '3.9'
 
 services:
-  mongodb:
-    container_name: database
+  database:
+    container_name: heartrate-database
     image: mongo:5.0
     ports:
       - 27017:27017
@@ -11,3 +11,15 @@ services:
     environment:
       - MONGO_INITDB_ROOT_USERNAME=${MONGO_INITDB_ROOT_USERNAME}
       - MONGO_INITDB_ROOT_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD}
+  server:
+    container_name: heartrate-server
+    build: './server'
+    environment:
+        - MONGO_URI=mongodb://${MONGO_INITDB_ROOT_USERNAME}:${MONGO_INITDB_ROOT_PASSWORD}@database:27017/
+    ports:
+        - "9990:9990"
+    expose:
+        - 9990
+    restart: always
+    depends_on:
+        - database
